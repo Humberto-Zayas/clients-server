@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const HeroTitle = require('./models/heroTitle');
+const getHeroTitleModel = require('./models/heroTitle.js');
 
 // Connect to the MongoDB server
 mongoose.connect('mongodb://localhost/myapp', {
@@ -21,14 +21,18 @@ const heroTitles = [
 // Function to seed the database with the demo hero titles
 async function seedDatabase() {
   try {
-    await HeroTitle.deleteMany(); // Clear the collection
-    const result = await HeroTitle.insertMany(heroTitles); // Insert the demo hero titles
-    console.log(`Successfully seeded database with ${result.length} hero titles`);
+    for (const heroTitleData of heroTitles) {
+      const HeroTitle = getHeroTitleModel(heroTitleData.website);
+      await HeroTitle.deleteMany({}); // Clear the collection
+      const result = await HeroTitle.create(heroTitleData); // Insert the demo hero title
+      console.log(`Successfully seeded database with hero title for ${heroTitleData.website}`);
+    }
     mongoose.connection.close(); // Close the database connection
   } catch (err) {
     console.error('Error seeding database:', err);
     mongoose.connection.close(); // Close the database connection
   }
 }
+
 
 seedDatabase(); // Call the seedDatabase function

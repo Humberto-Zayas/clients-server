@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 
 const heroTitleSchema = new mongoose.Schema({
-  website: String,
-  title: String
+  website: { type: String, required: true },
+  title: { type: String, required: true },
 });
 
-const HeroTitle = mongoose.model('HeroTitle', heroTitleSchema);
+const getHeroTitleModel = (website) => {
+  return mongoose.model(`HeroTitle_${website}`, heroTitleSchema, `heroTitles_${website}`);
+};
 
-module.exports = HeroTitle;
+module.exports = getHeroTitleModel;

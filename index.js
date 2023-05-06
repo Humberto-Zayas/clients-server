@@ -2,10 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const HeroTitle = require('./models/heroTitle');
+const getHeroTitleModel = require('./models/heroTitle'); // Change this line
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
 const router = express.Router();
 const session = require('express-session');
 
@@ -79,6 +78,7 @@ app.post('/hero-title/:website', passport.authenticate('local', { session: false
   const { title } = req.body;
 
   try {
+    const HeroTitle = getHeroTitleModel(website); // Add this line
     const heroTitle = await HeroTitle.findOneAndUpdate({ website }, { title }, { new: true });
     if (!heroTitle) {
       return res.status(404).json({ error: `Hero title not found for website '${website}'` });
@@ -95,7 +95,8 @@ app.get('/hero-title/:website', async (req, res) => {
   const website = req.params.website;
 
   try {
-    const heroTitle = await HeroTitle.findOne({ website: website });
+    const HeroTitle = getHeroTitleModel(website); // Add this line
+    const heroTitle = await HeroTitle.findOne({ website });
 
     if (!heroTitle) {
       return res.status(404).send(`Hero title for '${website}' not found`);
